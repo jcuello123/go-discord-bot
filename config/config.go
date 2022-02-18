@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
+	"errors"
 )
 
 var (
@@ -20,6 +22,11 @@ type configStruct struct{
 
 func ReadConfig() error{
 	fmt.Println("Reading config file..")
+
+	if err := readConfigFromEnv(); err == nil {
+		return nil
+	}
+
 	file, err := ioutil.ReadFile("./config.json")
 
 	if err != nil{
@@ -37,6 +44,24 @@ func ReadConfig() error{
 
 	Token = config.Token
 	BotPrefix = config.BotPrefix
+
+	return nil
+}
+
+func readConfigFromEnv() error {
+	token := os.Getenv("TOKEN")
+	if token == "" {
+		return errors.New("Bot token is missing.")
+	}
+
+	botPrefix := os.Getenv("BOT_PREFIX")
+	if botPrefix == "" {
+		return errors.New("Bot prefix is missing.")
+	}
+
+	Token = token
+	BotPrefix = botPrefix
+	fmt.Println("Read config from env successfully.")
 
 	return nil
 }

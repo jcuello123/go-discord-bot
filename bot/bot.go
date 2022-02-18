@@ -37,16 +37,13 @@ func Start(){
 }
 
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate){
-	fmt.Println("IN MESSAGE HANDLER")
-
-	if m.Author.ID == botId {
+	if firstChar := m.Content[0:1]; firstChar != config.BotPrefix || m.Author.ID == botId {
 		return
 	}
+	
+	command := m.Content[1:]
 
-	fmt.Println("m.Content:",m.Content)
-
-	if m.Content == "ping" {
-	fmt.Println("PING")
+	if command == "ping" {
 		_, err := s.ChannelMessageSend(m.ChannelID, "pong")
 		if err != nil {
 			fmt.Println(err.Error())
