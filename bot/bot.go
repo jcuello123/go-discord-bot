@@ -3,12 +3,18 @@ package bot
 import (
 	"fmt"
 	"go-discord-bot/config"
-
+	"math/rand"
+    "time"
 	"github.com/bwmarrin/discordgo"
 )
 
 var botId string
 var goBot *discordgo.Session
+var maps = []string{"nacht der untoten", "verruckt", "shang ri la", "moon", "origins", "shi no numa", "shadow of evil", "der riese"}
+
+func init(){
+	rand.Seed(time.Now().UnixNano())
+}
 
 func Start(){
 	goBot, err := discordgo.New("Bot " + config.Token)
@@ -49,4 +55,15 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate){
 			fmt.Println(err.Error())
 		}
 	}
+
+	if command == "maps" {
+		_, err := s.ChannelMessageSend(m.ChannelID, getRandMap())
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	}
+}
+
+func getRandMap() string{
+	return maps[rand.Intn(len(maps))]
 }
