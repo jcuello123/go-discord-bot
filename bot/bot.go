@@ -48,11 +48,15 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate){
 	}
 	
 	command := m.Content[1:]
+	if command == "" {
+		return
+	}
 
 	if command == "ping" {
 		_, err := s.ChannelMessageSend(m.ChannelID, "pong")
 		if err != nil {
 			fmt.Println(err.Error())
+			return
 		}
 	}
 
@@ -60,6 +64,7 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate){
 		_, err := s.ChannelMessageSend(m.ChannelID, getRandMap())
 		if err != nil {
 			fmt.Println(err.Error())
+			return
 		}
 	}
 }
