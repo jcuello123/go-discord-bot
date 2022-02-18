@@ -1,0 +1,1 @@
+Worker: bin/go-discord-bot
