@@ -4,17 +4,15 @@ import (
 	"fmt"
 	"go-discord-bot/config"
 	"math/rand"
-    "time"
+	"strings"
+	"time"
+
 	"github.com/bwmarrin/discordgo"
 )
 
 var botId string
 var goBot *discordgo.Session
 var maps = []string{"nacht der untoten", "verruckt", "shang ri la", "moon", "origins", "shi no numa", "shadow of evil", "der riese"}
-
-func init(){
-	rand.Seed(time.Now().UnixNano())
-}
 
 func Start(){
 	goBot, err := discordgo.New("Bot " + config.Token)
@@ -43,14 +41,17 @@ func Start(){
 }
 
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate){
-	if firstChar := m.Content[0:1]; firstChar != config.BotPrefix || m.Author.ID == botId {
+	if !strings.HasPrefix(m.Content, config.BotPrefix) || m.Author.ID == botId {
 		return
 	}
 	
-	command := m.Content[1:]
-	if command == "" {
+	args := strings.Split(m.Content, " ")
+	commandWithPrefix := args[0]
+	if len(commandWithPrefix) == 1 {
 		return
-	}
+	} 
+
+	command := strings.Replace(commandWithPrefix, config.BotPrefix, "", 1)
 
 	if command == "ping" {
 		_, err := s.ChannelMessageSend(m.ChannelID, "pong")
@@ -67,8 +68,22 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate){
 			return
 		}
 	}
+
+	if len(args) > 2 && command == "random" {
+		_, err := s.ChannelMessageSend(m.ChannelID, getRandItem(args[1:]))
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+	}
 }
 
-func getRandMap() string{
+func getRandMap() string {
+	rand.Seed(time.Now().UnixNano())
 	return maps[rand.Intn(len(maps))]
+}
+
+func getRandItem(args[] string) string {
+	rand.Seed(time.Now().UnixNano())
+	return args[rand.Intn(len(args))]
 }
