@@ -38,9 +38,7 @@ func Start(){
 		return
 	}
 
-	for _, zombieMap := range maps {
-		mapsCounter[zombieMap] = 0
-	}
+	resetMapsCounter()
 	fmt.Println("Bot is running.")
 }
 
@@ -83,6 +81,15 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate){
 			return
 		}
 	}
+
+	if command == "resetmaps" {
+		resetMapsCounter()
+		_, err := s.ChannelMessageSend(m.ChannelID, "Maps counter has been reset.")
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+	}
 }
 
 func getRandMap() string {
@@ -95,4 +102,10 @@ func getRandMap() string {
 func getRandItem(args[] string) string {
 	rand.Seed(time.Now().UnixNano())
 	return args[rand.Intn(len(args))]
+}
+
+func resetMapsCounter() {
+	for _, zombieMap := range maps {
+		mapsCounter[zombieMap] = 0
+	}
 }
