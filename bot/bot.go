@@ -13,7 +13,6 @@ import (
 var botId string
 var goBot *discordgo.Session
 var maps = []string{"nacht der untoten", "verruckt", "shang ri la", "moon", "origins", "shi no numa", "shadow of evil", "der riese"}
-var mapsCounter = make(map[string]int)
 
 func Start(){
 	goBot, err := discordgo.New("Bot " + config.Token)
@@ -38,7 +37,6 @@ func Start(){
 		return
 	}
 
-	resetMapsCounter()
 	fmt.Println("Bot is running.")
 }
 
@@ -64,10 +62,7 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate){
 	}
 
 	if command == "maps" {
-		zombieMap := getRandMap()
-		mapsCounterFormatted := fmt.Sprintf("%v", mapsCounter)[3:] 
-		response := fmt.Sprintf("%s %v", zombieMap, mapsCounterFormatted)
-		_, err := s.ChannelMessageSend(m.ChannelID, response)
+		_, err := s.ChannelMessageSend(m.ChannelID, getRandMap())
 		if err != nil {
 			fmt.Println(err.Error())
 			return
@@ -81,31 +76,15 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate){
 			return
 		}
 	}
-
-	if command == "resetmaps" {
-		resetMapsCounter()
-		_, err := s.ChannelMessageSend(m.ChannelID, "Maps counter has been reset.")
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-	}
 }
 
 func getRandMap() string {
 	rand.Seed(time.Now().UnixNano())
 	zombieMap := maps[rand.Intn(len(maps))]
-	mapsCounter[zombieMap]++
 	return strings.ToUpper(zombieMap) 
 }
 
 func getRandItem(args[] string) string {
 	rand.Seed(time.Now().UnixNano())
 	return args[rand.Intn(len(args))]
-}
-
-func resetMapsCounter() {
-	for _, zombieMap := range maps {
-		mapsCounter[zombieMap] = 0
-	}
 }
