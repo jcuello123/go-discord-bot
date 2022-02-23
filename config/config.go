@@ -12,11 +12,13 @@ var (
 	Token string
 	BotPrefix string
 	config *configStruct
+	DB_URI string
+	localDBURI string = "mongodb://localhost:27017"
 )
 
 type configStruct struct{
-	Token string `json: "token"`
-	BotPrefix string `json: "botPrefix"`
+	Token string `json:"token"`
+	BotPrefix string `json:"botPrefix"`
 }
 
 
@@ -64,4 +66,16 @@ func readConfigFromEnv() error {
 	fmt.Println("Read config from env successfully.")
 
 	return nil
+}
+
+func GetDbURI() {
+	dbURI := os.Getenv("DB_URI")
+	if dbURI == "" {
+		DB_URI = localDBURI
+		fmt.Println("Defaulting to local db URI.")
+		return
+	}
+
+	DB_URI = dbURI
+	fmt.Println("Read DB_URI from env successfully.")
 }

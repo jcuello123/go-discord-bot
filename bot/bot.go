@@ -2,17 +2,19 @@ package bot
 
 import (
 	"fmt"
-	"go-discord-bot/config"
 	"math/rand"
 	"strings"
 	"time"
+
+	"go-discord-bot/config"
+	// "go-discord-bot/db"
+	"go-discord-bot/maps"
 
 	"github.com/bwmarrin/discordgo"
 )
 
 var botId string
 var goBot *discordgo.Session
-var maps = []string{"nacht der untoten", "verruckt", "shang ri la", "moon", "origins", "shi no numa", "shadow of evil", "der riese"}
 
 func Start(){
 	goBot, err := discordgo.New("Bot " + config.Token)
@@ -38,6 +40,8 @@ func Start(){
 	}
 
 	fmt.Println("Bot is running.")
+
+	// db.Connect()
 }
 
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate){
@@ -62,7 +66,7 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate){
 	}
 
 	if command == "maps" {
-		_, err := s.ChannelMessageSend(m.ChannelID, getRandMap())
+		_, err := s.ChannelMessageSend(m.ChannelID, maps.GetRandMap())
 		if err != nil {
 			fmt.Println(err.Error())
 			return
@@ -76,12 +80,6 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate){
 			return
 		}
 	}
-}
-
-func getRandMap() string {
-	rand.Seed(time.Now().UnixNano())
-	zombieMap := maps[rand.Intn(len(maps))]
-	return strings.ToUpper(zombieMap) 
 }
 
 func getRandItem(args[] string) string {

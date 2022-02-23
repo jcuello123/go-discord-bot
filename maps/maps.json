@@ -1,0 +1,48 @@
+{
+	"maps": [
+		{
+			"name": "der_riese",
+			"completed": false
+		},
+
+		{
+			"name": "moon",
+			"completed": false
+		},
+
+		{
+			"name": "nacht der untoten",
+			"completed": false
+		},
+
+		{
+			"name": "origins",
+			"completed": false
+		},
+
+		{
+			"name": "shadows of evil",
+			"completed": false
+		},
+
+		{
+			"name": "shang ri la",
+			"completed": false
+		},
+
+		{
+			"name": "shi no numa",
+			"completed": false
+		},
+
+		{
+			"name": "kino der toten",
+			"completed": false
+		},
+
+		{
+			"name": "ascension",
+			"completed": false
+		}
+	]
+}
