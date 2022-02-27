@@ -2,13 +2,11 @@ package bot
 
 import (
 	"fmt"
-	"math/rand"
 	"strings"
-	"time"
 
+	"go-discord-bot/commands"
 	"go-discord-bot/config"
-	// "go-discord-bot/db"
-	"go-discord-bot/maps"
+	"go-discord-bot/db"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -41,7 +39,7 @@ func Start(){
 
 	fmt.Println("Bot is running.")
 
-	// db.Connect()
+	db.Connect()
 }
 
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate){
@@ -56,33 +54,5 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate){
 	} 
 
 	command := strings.Replace(commandWithPrefix, config.BotPrefix, "", 1)
-
-	if command == "ping" {
-		_, err := s.ChannelMessageSend(m.ChannelID, "pong")
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-	}
-
-	if command == "maps" {
-		_, err := s.ChannelMessageSend(m.ChannelID, maps.GetRandMap())
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-	}
-
-	if len(args) > 2 && command == "random" {
-		_, err := s.ChannelMessageSend(m.ChannelID, getRandItem(args[1:]))
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-	}
-}
-
-func getRandItem(args[] string) string {
-	rand.Seed(time.Now().UnixNano())
-	return args[rand.Intn(len(args))]
+	commands.Execute(command, args, s, m)
 }
