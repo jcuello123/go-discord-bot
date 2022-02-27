@@ -54,5 +54,5 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate){
 	} 
 
 	command := strings.Replace(commandWithPrefix, config.BotPrefix, "", 1)
-	commands.Execute(command, args, s, m)
+	commands.Execute(command, args[1:], s, m)
 }
