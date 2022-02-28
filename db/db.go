@@ -5,8 +5,6 @@ import (
 	"go-discord-bot/constants"
 	"log"
 
-	// "go-discord-bot/maps"
-
 	"context"
 	"fmt"
 
@@ -14,7 +12,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	// "go.mongodb.org/mongo-driver/bson"
 )
 
 var (
@@ -31,12 +28,6 @@ func Connect(){
 	if err != nil {
 		panic(err)
 	}
-
-	// defer func() {
-	// 	if err = db.Client.Disconnect(context.TODO()); err != nil {
-	// 		panic(err)
-	// 	}
-	// }()ddclient
 
 	if err := client.Ping(context.TODO(), readpref.Primary()); err != nil {
 		panic(err)
