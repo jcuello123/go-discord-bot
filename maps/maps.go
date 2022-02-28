@@ -80,7 +80,7 @@ func FormattedMaps() string {
 func CompleteMap(args []string) string {
 	var mapName strings.Builder
 	lastElement := len(args) - 1
-	for i, arg := range args[1:] {
+	for i, arg := range args {
 		mapName.WriteString(arg)
 		if i < lastElement {
 			mapName.WriteString(" ")
