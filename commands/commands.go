@@ -17,6 +17,7 @@ type randMap struct {}
 type random struct {}
 type completed struct {}
 type completeMap struct {}
+type unCompleteMap struct {}
 
 type command interface{
 	execute(args []string)
@@ -35,6 +36,7 @@ func init() {
 	allCommands["random"] = empty
 	allCommands["completed"] = empty
 	allCommands["completemap"] = empty
+	allCommands["uncompletemap"] = empty
 }
 
 func Execute(command string, args []string,  s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -81,6 +83,11 @@ func createCommand(cmd string) (command, error) {
 		return cm, nil	
 	}
 
+	if cmd == "uncompletemap" {
+		var ucm unCompleteMap 
+		return ucm, nil	
+	}
+
 	errMsg := fmt.Sprintf("The '%s' command couldn't be created.", cmd)
 	return nil, errors.New(errMsg)
 }
@@ -109,7 +116,21 @@ func (c completed) execute(args []string) {
 }
 
 func (cm completeMap) execute(args []string) {
-	sendMessage(maps.CompleteMap(args))
+	err := maps.UpdateMapComplete(args, true)
+	if err != nil {
+		sendMessage(err.Error())
+	} else {
+		sendMessage(maps.FormattedMaps())
+	}
+}
+
+func (ucm unCompleteMap) execute(args []string) {
+	err := maps.UpdateMapComplete(args, false)
+	if err != nil {
+		sendMessage(err.Error())
+	} else {
+		sendMessage(maps.FormattedMaps())
+	}
 }
 
 func getRandItem(args[] string) string {

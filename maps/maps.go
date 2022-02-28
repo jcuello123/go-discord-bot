@@ -1,6 +1,7 @@
 package maps
 
 import (
+	"fmt"
 	"go-discord-bot/constants"
 	"go-discord-bot/db"
 
@@ -20,7 +21,9 @@ type ZombieMap struct {
 func GetRandMap() string {
 	rand.Seed(time.Now().UnixNano())
 	zombieMap := constants.ZombieMapsArr[rand.Intn(len(constants.ZombieMapsArr))]
-	return strings.ToUpper(zombieMap) 
+	emoji := constants.ZMapToEmoji(zombieMap)
+	msg := fmt.Sprintf("%s %s %s", emoji, strings.ToUpper(zombieMap), emoji)
+	return msg 
 }
 
 func bsonToZombieMaps() []ZombieMap{
@@ -77,7 +80,7 @@ func FormattedMaps() string {
 	return result.String()
 }
 
-func CompleteMap(args []string) string {
+func UpdateMapComplete(args []string, completed bool) error{
 	var mapName strings.Builder
 	lastElement := len(args) - 1
 	for i, arg := range args {
@@ -87,5 +90,9 @@ func CompleteMap(args []string) string {
 		}
 	} 
 
-	return db.CompleteMap(mapName.String())
+	err := db.UpdateMapComplete(mapName.String(), completed)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"go-discord-bot/config"
 	"go-discord-bot/constants"
 	"log"
@@ -63,19 +64,20 @@ func GetAllMapsAsBson() []bson.D{
 	return bsonDocs
 }
 
-func CompleteMap(mapName string) string {
+func UpdateMapComplete(mapName string, completed bool) error {
 	if !constants.MapExists(mapName){
-		return fmt.Sprintf("%s doesn't exist.", mapName)
+		return errors.New(mapName + " doesn't exist") 
 	}
 
 	filter := bson.D{{"name", mapName}}
-	update := bson.D{{"$set", bson.D{{"completed", true}}}}
+	update := bson.D{{"$set", bson.D{{"completed", completed}}}}
 
 	_, err := coll.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
-		fmt.Println(err)
-		return fmt.Sprintf("Error when marking %s as complete.", mapName)
+		log.Println(err)
+		errMsg := fmt.Sprintf("Error when updating %s.", mapName)
+		return errors.New(errMsg) 
 	}
 
-	return fmt.Sprintf("%s has been marked as complete.", mapName)
+	return nil 
 }
