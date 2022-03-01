@@ -22,9 +22,7 @@ var (
 
 
 func Connect(){
-	config.GetDbURI()	
-
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(config.DB_URI))
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(config.GetDbURI()))
 
 	if err != nil {
 		panic(err)

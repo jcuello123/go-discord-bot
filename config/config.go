@@ -12,8 +12,8 @@ var (
 	Token string
 	BotPrefix string
 	config *configStruct
-	DB_URI string
 	localDBURI string = "mongodb://localhost:27017"
+	File string = "./config/config.json"
 )
 
 type configStruct struct{
@@ -21,28 +21,27 @@ type configStruct struct{
 	BotPrefix string `json:"botPrefix"`
 }
 
-
-func ReadConfig() error{
+func ReadConfig(configFile string) error{
 	fmt.Println("Reading config file..")
 
 	if err := readConfigFromEnv(); err == nil {
 		return nil
 	}
 
-	file, err := ioutil.ReadFile("./config.json")
+	file, err := ioutil.ReadFile(configFile)
 
 	if err != nil{
 		fmt.Println(err.Error())
 		return err
 	}
 
-	fmt.Println(string(file))
 	err = json.Unmarshal(file, &config)
 
 	if err != nil{
 		fmt.Println(err.Error())
 		return err
 	}
+	fmt.Println(config)
 
 	Token = config.Token
 	BotPrefix = config.BotPrefix
@@ -68,14 +67,13 @@ func readConfigFromEnv() error {
 	return nil
 }
 
-func GetDbURI() {
-	dbURI := os.Getenv("DB_URI")
-	if dbURI == "" {
-		DB_URI = localDBURI
+func GetDbURI() string{
+	dbURIFromEnv:= os.Getenv("DB_URI")
+	if dbURIFromEnv == "" {
 		fmt.Println("Defaulting to local db URI.")
-		return
+		return localDBURI
 	}
 
-	DB_URI = dbURI
 	fmt.Println("Read DB_URI from env successfully.")
+	return dbURIFromEnv
 }
