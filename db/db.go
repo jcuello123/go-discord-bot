@@ -21,45 +21,46 @@ var (
 ) 
 
 
-func Connect(){
+func Connect() error{
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(config.GetDbURI()))
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	if err := client.Ping(context.TODO(), readpref.Primary()); err != nil {
-		panic(err)
+		return err
 	}
 
 	fmt.Println("Successfully connected and pinged DB")
 
 	coll = client.Database("go-discord-bot").Collection("maps")
+	return nil
 }
 
-func GetAllMapsAsBson() []bson.D{
+func GetAllMapsAsBson() ([]bson.D, error){
 	var bsonDocs []bson.D
 	filter := bson.D{}
 
 	cursor, err := coll.Find(context.TODO(), filter)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	for cursor.Next(context.TODO()) {
 		var result bson.D
 		if err := cursor.Decode(&result); err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		
 		bsonDocs = append(bsonDocs, result)
 	}
 
 	if err := cursor.Err(); err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return bsonDocs
+	return bsonDocs, nil
 }
 
 func UpdateMapComplete(mapName string, completed bool) error {

@@ -93,6 +93,10 @@ func createCommand(cmd string) (command, error) {
 }
 
 func sendMessage(message string) {
+	if message == "" {
+		return
+	}
+
 	_, err := session.ChannelMessageSend(msgCreate.ChannelID, message)
 	if err != nil {
 		fmt.Println(err.Error())

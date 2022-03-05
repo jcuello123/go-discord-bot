@@ -3,8 +3,6 @@ package config
 import (
 	"os"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestGetDbURIFromEnv(t *testing.T){
@@ -14,15 +12,19 @@ func TestGetDbURIFromEnv(t *testing.T){
 	os.Setenv(testDbURI, testDbURIVal)
 
 	dbURIFromEnv := GetDbURI()
-
-	assert.Equal(t, testDbURIVal, dbURIFromEnv, "Should retrieve DB URI from env")
+	if dbURIFromEnv != testDbURIVal {
+		os.Unsetenv(testDbURI)
+		t.Errorf("Expected %s but received %s from env", testDbURIVal, dbURIFromEnv)
+	}
 
 	os.Unsetenv(testDbURI)
 }
 
 func TestGetDbURILocal(t *testing.T) {
 	dbURI := GetDbURI()
-	assert.Equal(t, localDBURI, dbURI, "Should default to local DB URI when env variable isnt present")
+	if dbURI != localDBURI {
+		t.Errorf("Expected %s but received %s from local", localDBURI, dbURI)
+	}
 }
 
 func TestReadConfigProperEnvVariablesSet(t *testing.T) {
@@ -30,8 +32,9 @@ func TestReadConfigProperEnvVariablesSet(t *testing.T) {
 	os.Setenv("BOT_PREFIX", "prefix")
 
 	err := ReadConfig("config_test.json")
-
-	assert.Nil(t, err)
+	if err != nil {
+		t.Errorf("Expected nil but received %s", err)
+	}
 	
 	os.Unsetenv("TOKEN")
 	os.Unsetenv("BOT_PREFIX")
@@ -39,23 +42,35 @@ func TestReadConfigProperEnvVariablesSet(t *testing.T) {
 
 func TestReadConfigLocal(t *testing.T) {
 	err := ReadConfig("config_test.json")
-
-	assert.Nil(t, err)
-	assert.Equal(t, "token", config.Token)
-	assert.Equal(t, "prefix", config.BotPrefix)
+	if err != nil {
+		t.Errorf("Expected nil but received %s", err)
+	}
+	if config.Token != "token" {
+		t.Errorf("Expected token but received %s", config.Token)
+	}
+	if config.BotPrefix != "prefix" {
+		t.Errorf("Expected prefix but received %s", config.BotPrefix)
+	}
 }
 
 func TestReadConfigLocalWithOnlyTokenSet(t *testing.T) {
 	os.Setenv("TOKEN", "token")
 	err := ReadConfig("config_test.json")
 
-	assert.Nil(t, err)
-	assert.Equal(t, "token", config.Token)
-	assert.Equal(t, "prefix", config.BotPrefix)
+	if err != nil {
+		t.Errorf("Expected nil but received %s", err)
+	}
+	if  config.Token != "token" {
+		t.Errorf("Expected token but received %s", config.Token)
+	}
+	if config.BotPrefix != "prefix" {
+		t.Errorf("Expected prefix but received %s", config.BotPrefix)
+	}
 }
 
 func TestReadConfigInvalidFile(t *testing.T) {
 	err := ReadConfig("invalid_file.json")
-	
-	assert.Error(t, err)
+	if err == nil {
+		t.Errorf("Expected error but received nil")
+	}
 }

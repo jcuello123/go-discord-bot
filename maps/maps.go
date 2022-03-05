@@ -21,48 +21,62 @@ type ZombieMap struct {
 func GetRandMap() string {
 	rand.Seed(time.Now().UnixNano())
 	zombieMap := constants.ZombieMapsArr[rand.Intn(len(constants.ZombieMapsArr))]
-	emoji := constants.ZMapToEmoji(zombieMap)
+
+	emoji, err := constants.ZMapToEmoji(zombieMap)
+	if err != nil {
+		log.Println(err.Error())
+		return ""
+	}
+
 	msg := fmt.Sprintf("%s %s %s", emoji, strings.ToUpper(zombieMap), emoji)
 	return msg 
 }
 
-func bsonToZombieMaps() []ZombieMap{
+func bsonToZombieMaps() ([]ZombieMap, error){
 	var zombieMaps []ZombieMap
-	bsonDocs := db.GetAllMapsAsBson()
+
+	bsonDocs, err := db.GetAllMapsAsBson()
+	if err != nil {
+		return nil, err
+	}
 
 	for _, result := range bsonDocs {
 		nameAsDoc, err := bson.Marshal(bson.D{result[1]})
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 
 		// TODO: figure out how to marshal all the properties as once
 		completedAsDoc, err := bson.Marshal(bson.D{result[2]})
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 
 		var zombieMap ZombieMap
 
 		err = bson.Unmarshal(nameAsDoc, &zombieMap)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 
 		err = bson.Unmarshal(completedAsDoc, &zombieMap)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 
 		zombieMaps = append(zombieMaps, zombieMap)
 	}
 
-	return zombieMaps
+	return zombieMaps, nil
 }
 
 func FormattedMaps() string {
 	var result strings.Builder
-	zombieMaps := bsonToZombieMaps()
+	
+	zombieMaps, err := bsonToZombieMaps()
+	if err != nil {
+		return ""
+	}
 
 	for _, zombieMap := range zombieMaps {
 		result.WriteString(zombieMap.Name)

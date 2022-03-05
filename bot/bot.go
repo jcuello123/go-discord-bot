@@ -39,7 +39,10 @@ func Start(){
 
 	fmt.Println("Bot is running.")
 
-	db.Connect()
+	err = db.Connect()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate){
