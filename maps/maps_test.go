@@ -10,7 +10,7 @@ import (
 func init() {
 	err := db.Connect()
 	if err != nil {
-		log.Println("Error when connecting to local db for testing.", err)
+		log.Fatal("Error when connecting to local db for testing.", err)
 	}
 }
 

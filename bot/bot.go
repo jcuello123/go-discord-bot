@@ -2,6 +2,7 @@ package bot
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"go-discord-bot/commands"
@@ -57,5 +58,9 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate){
 	} 
 
 	command := strings.Replace(commandWithPrefix, config.BotPrefix, "", 1)
-	commands.Execute(command, args[1:], s, m)
+	
+	err := commands.Execute(command, args[1:], s, m.ChannelID)
+	if err != nil {
+		log.Println(err)
+	}
 }
