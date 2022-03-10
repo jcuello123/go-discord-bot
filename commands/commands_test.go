@@ -21,8 +21,6 @@ func init() {
 }
 
 func (d discordSessionMock) ChannelMessageSend(channelID string, message string) (*discordgo.Message, error) {
-	log.Printf("Mocked message: %s", message)
-	log.Println()
 	return nil, nil
 }
 
@@ -31,7 +29,7 @@ func TestExecuteInvalidCommand(t *testing.T) {
 
 	err := Execute("invalid", args, sessionMock, "1")
 	if err == nil {
-		t.Fatalf("Expected invalid command error but received %s", err)
+		t.Fatalf("Expected invalid command error but received: %s", err)
 	}
 }
 
@@ -40,7 +38,7 @@ func TestExecutePingCommand(t *testing.T) {
 
 	err := Execute("ping", args, sessionMock, "1")
 	if err != nil {
-		t.Errorf("Expected nil error but received %s", err)
+		t.Errorf("Expected nil error but received: %s", err)
 	}
 }
 
@@ -49,7 +47,7 @@ func TestExecuteRandMapCommand(t *testing.T) {
 
 	err := Execute("randmap", args, sessionMock, "1")
 	if err != nil {
-		t.Errorf("Expected nil error but received %s", err)
+		t.Errorf("Expected nil error but received: %s", err)
 	}
 }
 
@@ -58,7 +56,7 @@ func TestExecuteRandomCommand(t *testing.T) {
 
 	err := Execute("random", args, sessionMock, "1")
 	if err != nil {
-		t.Errorf("Expected nil error but received %s", err)
+		t.Errorf("Expected nil error but received: %s", err)
 	}
 }
 
@@ -67,7 +65,7 @@ func TestExecuteCompletedCommand(t *testing.T) {
 
 	err := Execute("completed", args, sessionMock, "1")
 	if err != nil {
-		t.Errorf("Expected nil error but received %s", err)
+		t.Errorf("Expected nil error but received: %s", err)
 	}
 }
 
@@ -76,7 +74,7 @@ func TestExecuteCompleteMapCommand(t *testing.T) {
 
 	err := Execute("completemap", args, sessionMock, "1")
 	if err != nil {
-		t.Errorf("Expected nil error but received %s", err)
+		t.Errorf("Expected nil error but received: %s", err)
 	}
 }
 
@@ -85,6 +83,24 @@ func TestExecuteUnCompleteMapCommand(t *testing.T) {
 
 	err := Execute("uncompletemap", args, sessionMock, "1")
 	if err != nil {
-		t.Errorf("Expected nil error but received %s", err)
+		t.Errorf("Expected nil error but received: %s", err)
+	}
+}
+
+func TestExecuteBSHelpCommand(t *testing.T) {
+	args := []string{"help"}
+	
+	err := Execute("bs", args, sessionMock, "1")
+	if err != nil {
+		t.Errorf("Expected nil error but received: %s", err)
+	}
+}
+
+func TestExecuteBSStartCommand(t *testing.T) {
+	args := []string{"start"}
+	
+	err := Execute("bs", args, sessionMock, "1")
+	if err != nil {
+		t.Errorf("Expected nil error but received: %s", err)
 	}
 }

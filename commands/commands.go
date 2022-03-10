@@ -1,11 +1,12 @@
 package commands
 
 import (
-	"math/rand"
-	"fmt"
-	"time"
 	"errors"
+	"fmt"
+	"math/rand"
+	"time"
 
+	"go-discord-bot/battleship"
 	"go-discord-bot/maps"
 	"go-discord-bot/types"
 
@@ -18,6 +19,7 @@ type random struct {}
 type completed struct {}
 type completeMap struct {}
 type unCompleteMap struct {}
+type battleShip struct {}
 
 type command interface{
 	execute(args []string) error
@@ -41,6 +43,7 @@ func init() {
 	allCommands["completed"] = empty
 	allCommands["completemap"] = empty
 	allCommands["uncompletemap"] = empty
+	allCommands["bs"] = empty
 }
 
 func Execute(command string, args []string,  s discordSession, discordChannelID string) error {
@@ -92,6 +95,11 @@ func createCommand(cmd string) (command, error) {
 		return ucm, nil	
 	}
 
+	if cmd == "bs" {
+		var bs battleShip
+		return bs, nil 
+	}
+
 	errMsg := fmt.Sprintf("The '%s' command couldn't be created.", cmd)
 	return nil, errors.New(errMsg)
 }
@@ -141,6 +149,22 @@ func (ucm unCompleteMap) execute(args []string) error {
 	} else {
 		return sendMessage(maps.FormattedMaps())
 	}
+}
+
+func (bs battleShip) execute(args []string) error {
+	if len(args) == 0 {
+		return errors.New("Battleship command takes at least one more argument.")
+	}
+
+	subcmd := args[0]
+	
+	if subcmd == "help" {
+		return sendMessage(battleship.Help)
+	} else if subcmd == "start" {
+		return sendMessage(battleship.GetBoardAsString())
+	}
+
+	return nil
 }
 
 func getRandItem(args[] string) string {

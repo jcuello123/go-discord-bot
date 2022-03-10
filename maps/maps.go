@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go-discord-bot/constants"
 	"go-discord-bot/db"
+	"go-discord-bot/emoji"
 
 	"log"
 	"math/rand"
@@ -22,7 +23,7 @@ func GetRandMap() string {
 	rand.Seed(time.Now().UnixNano())
 	zombieMap := constants.ZombieMapsArr[rand.Intn(len(constants.ZombieMapsArr))]
 
-	emoji, err := constants.ZMapToEmoji(zombieMap)
+	emoji, err := emoji.ZMapToEmoji(zombieMap)
 	if err != nil {
 		log.Println(err.Error())
 		return ""
@@ -83,9 +84,9 @@ func FormattedMaps() string {
 		result.WriteString(" ")
 		
 		if zombieMap.Completed {
-			result.WriteString(constants.CHECK_MARK)
+			result.WriteString(emoji.CHECK_MARK)
 		} else {
-			result.WriteString(constants.X)
+			result.WriteString(emoji.X)
 		}
 		
 		result.WriteString("\n")

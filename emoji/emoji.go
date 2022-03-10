@@ -1,6 +1,9 @@
-package constants
+package emoji
 
-import "errors"
+import (
+	"errors"
+	"go-discord-bot/constants"
+)
 
 const X = ":x:"
 const CHECK_MARK = ":white_check_mark:"
@@ -14,9 +17,10 @@ const SNAKE = ":snake:"
 const MOVIE_CAMERA = ":movie_camera:"
 const ROCKET = ":rocket:"
 const TOILET = ":toilet:"
+const BLUE_SQUARE = ":blue_square:"
 
 func ZMapToEmoji(mapName string) (string, error) {
-	if !MapExists(mapName) {
+	if !constants.MapExists(mapName) {
 		return "", errors.New(mapName + "doesn't exist as a map.")
 	}
 
