@@ -104,3 +104,12 @@ func TestExecuteBSStartCommand(t *testing.T) {
 		t.Errorf("Expected nil error but received: %s", err)
 	}
 }
+
+func TestExecuteBSShootCommand(t *testing.T) {
+	args := []string{"shoot", "0", "0"}
+	
+	err := Execute("bs", args, sessionMock, "1")
+	if err != nil {
+		t.Errorf("Expected nil error but received: %s", err)
+	}
+}

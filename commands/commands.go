@@ -46,6 +46,8 @@ func init() {
 	allCommands["bs"] = empty
 }
 
+// TODO: fix returning error from every method. just log the error in that method
+
 func Execute(command string, args []string,  s discordSession, discordChannelID string) error {
 	if !commandExists(command) {
 		return errors.New("Invalid command: " + command)
@@ -161,10 +163,21 @@ func (bs battleShip) execute(args []string) error {
 	if subcmd == "help" {
 		return sendMessage(battleship.Help)
 	} else if subcmd == "start" {
+		battleship.Start()
 		return sendMessage(battleship.GetBoardAsString())
+	} else if subcmd == "shoot" {
+		msg, err := battleship.Shoot(args)
+		if err != nil {
+			if err.Error() == "Max attempts reached. Game over." {
+				sendMessage(battleship.GetBoardAsString())
+			}
+			return sendMessage(err.Error())
+		}
+		sendMessage(battleship.GetBoardAsString())
+		sendMessage(msg)
 	}
 
-	return nil
+	return errors.New("Invalid use of bs command") 
 }
 
 func getRandItem(args[] string) string {

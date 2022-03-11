@@ -18,6 +18,7 @@ const MOVIE_CAMERA = ":movie_camera:"
 const ROCKET = ":rocket:"
 const TOILET = ":toilet:"
 const BLUE_SQUARE = ":blue_square:"
+const CRUISE_SHIP = ":cruise_ship:"
 
 func ZMapToEmoji(mapName string) (string, error) {
 	if !constants.MapExists(mapName) {
