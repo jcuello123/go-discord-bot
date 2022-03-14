@@ -122,16 +122,16 @@ func Shoot(args []string) (string, error){
 }
 
 func validateArgs(args []string) (int, int, error){
-	if len(args) != 3 {
-		return -1, -1, errors.New("Shoot command takes a total of 3 arguments. Received " + string(len(args)))
+	if len(args) != 2 {
+		return -1, -1, errors.New(fmt.Sprintf("Shoot command takes a total of 2 arguments. Received %d", (len(args))))
 	}
 
-	x, err := strconv.Atoi(args[1]) 
+	x, err := strconv.Atoi(args[0]) 
 	if err != nil {
 		return -1, -1, errors.New("Invalid argument for x.") 
 	}
 
-	y, err := strconv.Atoi(args[2]) 
+	y, err := strconv.Atoi(args[1]) 
 	if err != nil {
 		return -1, -1, errors.New("Invalid argument for y.")
 	}

@@ -2,7 +2,7 @@ package commands
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	"math/rand"
 	"time"
 
@@ -50,107 +50,107 @@ func init() {
 
 func Execute(command string, args []string,  s discordSession, discordChannelID string) error {
 	if !commandExists(command) {
-		return errors.New("Invalid command: " + command)
+		return errors.New("Invalid command: %s" + command)
 	}
 
 	session = s
 	channelID = discordChannelID 
 
-	cmd, err := createCommand(command)
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-
-	cmd.execute(args)
-	return nil
+	cmd := createCommand(command)
+	
+	err := cmd.execute(args)
+	return err	
 }
 
-func createCommand(cmd string) (command, error) {
+func createCommand(cmd string) command {
 	if cmd == "ping" {
 		var p ping 
-		return p, nil
+		return p
 	}
 
 	if cmd == "randmap" {
 		var rm randMap
-		return rm, nil
+		return rm
 	}
 
 	if cmd == "random" {
 		var r random
-		return r, nil
+		return r
 	}
 
 	if cmd == "completed" {
 		var c completed 
-		return c, nil
+		return c
 	}
 
 	if cmd == "completemap" {
 		var cm completeMap 
-		return cm, nil	
+		return cm	
 	}
 
 	if cmd == "uncompletemap" {
 		var ucm unCompleteMap 
-		return ucm, nil	
+		return ucm	
 	}
 
 	if cmd == "bs" {
 		var bs battleShip
-		return bs, nil 
+		return bs 
 	}
 
-	errMsg := fmt.Sprintf("The '%s' command couldn't be created.", cmd)
-	return nil, errors.New(errMsg)
+	log.Printf("The '%s' command couldn't be created.", cmd)
+	return nil
 }
 
 func sendMessage(message string) error {
 	if message == "" {
-		return errors.New("Empty message")
+		return errors.New("Message is empty.")
 	}
 
 	_, err := session.ChannelMessageSend(channelID, message)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
-func (p ping) execute(args []string) error {
-	return sendMessage("pong")
+func (p ping) execute(args []string) error{
+	err := sendMessage("pong")
+	return err
 }
 
 func (rm randMap) execute(args []string) error {
-	return sendMessage(maps.GetRandMap())
+	err := sendMessage(maps.GetRandMap())
+	return err
 }
 
 func (r random) execute(args []string) error {
-	return sendMessage(getRandItem(args))
+	err := sendMessage(getRandItem(args))
+	return err
 }
 
 func (c completed) execute(args []string) error {
-	return sendMessage(maps.FormattedMaps())
+	err := sendMessage(maps.FormattedMaps())
+	return err
 }
 
 func (cm completeMap) execute(args []string) error {
-	err := maps.UpdateMapComplete(args, true)
-	if err != nil {
-		return sendMessage(err.Error())
+	updateErr := maps.UpdateMapComplete(args, true)
+	var err error
+	if updateErr != nil {
+		err = sendMessage(updateErr.Error())
 	} else {
-		return sendMessage(maps.FormattedMaps())
+		err =sendMessage(maps.FormattedMaps())
 	}
+	return err
 }
 
 func (ucm unCompleteMap) execute(args []string) error {
-	err := maps.UpdateMapComplete(args, false)
-	if err != nil {
-		return sendMessage(err.Error())
+	updateErr:= maps.UpdateMapComplete(args, false)
+	var err error
+	if updateErr != nil {
+		err = sendMessage(updateErr.Error())
 	} else {
-		return sendMessage(maps.FormattedMaps())
+		err = sendMessage(maps.FormattedMaps())
 	}
+	return err
 }
 
 func (bs battleShip) execute(args []string) error {
@@ -159,25 +159,45 @@ func (bs battleShip) execute(args []string) error {
 	}
 
 	subcmd := args[0]
+	var err error
 	
 	if subcmd == "help" {
-		return sendMessage(battleship.Help)
+		err = sendMessage(battleship.Help)
 	} else if subcmd == "start" {
 		battleship.Start()
-		return sendMessage(battleship.GetBoardAsString())
+		err = sendMessage(battleship.GetBoardAsString())
 	} else if subcmd == "shoot" {
-		msg, err := battleship.Shoot(args)
-		if err != nil {
-			if err.Error() == "Max attempts reached. Game over." {
-				sendMessage(battleship.GetBoardAsString())
+		msg, shootErr:= battleship.Shoot(args[1:])
+		if shootErr != nil {
+			if shootErr.Error() == "Max attempts reached. Game over." {
+				err = sendMessage(battleship.GetBoardAsString())
+				if err != nil {
+					return err
+				}
 			}
-			return sendMessage(err.Error())
+			err = sendMessage(shootErr.Error())
+			if err != nil {
+				return err
+			}
 		}
-		sendMessage(battleship.GetBoardAsString())
-		sendMessage(msg)
+		err = sendMessage(battleship.GetBoardAsString())
+		if err != nil {
+			return err
+		}
+		if msg != "" {
+			err = sendMessage(msg)
+			if err != nil {
+				return err
+			}
+		}
+	} else {
+		err = sendMessage("Invalid use of !bs shoot.")
+		if err != nil {
+			return err
+		}
 	}
 
-	return errors.New("Invalid use of bs command") 
+	return err
 }
 
 func getRandItem(args[] string) string {
